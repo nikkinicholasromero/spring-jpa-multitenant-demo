@@ -12,13 +12,10 @@ import java.util.stream.Collectors;
 public class AppConfig {
     @Bean
     public MultitenantDataSource dataSource(TenantDataSourceProperties properties) {
-        Map<String, DataSourceProperties> dataSourceProperties = properties.getDatasources();
-        Map<Object, Object> dataSources = dataSourceProperties.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> createDataSource(e.getValue())));
-
         MultitenantDataSource dataSource = new MultitenantDataSource();
         dataSource.setDefaultTargetDataSource(createDataSource(properties.getDatasource()));
-        dataSource.setTargetDataSources(dataSources);
+        dataSource.setTargetDataSources(properties.getDatasources().entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> createDataSource(e.getValue()))));
         return dataSource;
     }
 
