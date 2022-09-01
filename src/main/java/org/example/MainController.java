@@ -1,0 +1,17 @@
+package org.example;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class MainController {
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/{id}")
+    public User greetUser(@PathVariable int id) {
+        return userRepository.findById(id).orElse(null);
+    }
+}
