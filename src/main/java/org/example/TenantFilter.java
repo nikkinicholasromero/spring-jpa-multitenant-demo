@@ -1,6 +1,7 @@
 package org.example;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -14,7 +15,7 @@ import java.util.Objects;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
-    public static final String TENANT = "X-TENANT-ID";
+    public static final String TENANT = "TENANT";
 
     @Value("${default.tenant}")
     private String defaultTenant;
@@ -23,7 +24,7 @@ public class TenantFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (Objects.nonNull(attributes)) {
-            String tenant = req.getHeader(TENANT);
+            String tenant = req.getHeader(HttpHeaders.ORIGIN).split("//")[1].split("\\.")[0];
             if (Objects.isNull(tenant)) {
                 tenant = defaultTenant;
             }
