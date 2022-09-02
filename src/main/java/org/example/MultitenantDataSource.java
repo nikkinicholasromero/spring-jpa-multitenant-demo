@@ -4,6 +4,8 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
+import java.util.Objects;
+
 public class MultitenantDataSource extends AbstractRoutingDataSource {
     private final String defaultTenant;
 
@@ -13,11 +15,14 @@ public class MultitenantDataSource extends AbstractRoutingDataSource {
 
     @Override
     protected String determineCurrentLookupKey() {
-        try {
-            return RequestContextHolder.getRequestAttributes()
-                    .getAttribute("tenant", RequestAttributes.SCOPE_REQUEST).toString();
-        } catch (Exception e) {
-            return defaultTenant;
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (Objects.nonNull(attributes)) {
+            Object tenant = attributes.getAttribute("tenant", RequestAttributes.SCOPE_REQUEST);
+            if (Objects.nonNull(tenant) && tenant instanceof String) {
+                return tenant.toString();
+            }
         }
+
+        return defaultTenant;
     }
 }
