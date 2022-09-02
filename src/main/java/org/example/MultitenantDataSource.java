@@ -17,7 +17,7 @@ public class MultitenantDataSource extends AbstractRoutingDataSource {
     protected String determineCurrentLookupKey() {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (Objects.nonNull(attributes)) {
-            Object tenant = attributes.getAttribute("tenant", RequestAttributes.SCOPE_REQUEST);
+            Object tenant = attributes.getAttribute(TenantFilter.TENANT, RequestAttributes.SCOPE_REQUEST);
             if (Objects.nonNull(tenant) && tenant instanceof String) {
                 return tenant.toString();
             }

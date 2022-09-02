@@ -14,6 +14,8 @@ import java.util.Objects;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter {
+    public static final String TENANT = "X-TENANT-ID";
+
     @Value("${default.tenant}")
     private String defaultTenant;
 
@@ -21,12 +23,12 @@ public class TenantFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (Objects.nonNull(attributes)) {
-            String tenant = req.getHeader("X-TENANT-ID");
+            String tenant = req.getHeader(TENANT);
             if (Objects.isNull(tenant)) {
                 tenant = defaultTenant;
             }
 
-            attributes.setAttribute("tenant", tenant, RequestAttributes.SCOPE_REQUEST);
+            attributes.setAttribute(TENANT, tenant, RequestAttributes.SCOPE_REQUEST);
             RequestContextHolder.setRequestAttributes(attributes, true);
         }
         chain.doFilter(req, res);
